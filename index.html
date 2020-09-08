@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <style>
+    #app {
+        background-color: yellow;
+        padding: 10px;
+    }
+
+    #parent {
+        background-color: green;
+        width: 600px;
+        height: 300px;
+        position: relative;
+        padding-left: 5px;
+    }
+
+    h1 {
+        margin-top: 0;
+    }
+
+    .child {
+        width: 200px;
+        height: 200px;
+        position: absolute;
+        top: 60px;
+        padding: 0 5px 5px;
+    }
+
+    .childA {
+        background-color: red;
+        left: 20px;
+    }
+
+    .childB {
+        background-color: blue;
+        left: 250px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <parent />
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vuex"></script>
+    <script>
+    const store = new Vuex.Store({
+        state: {
+            result: 10
+        },
+        getters: {
+            score(state) {
+                return state.result
+            }
+
+        },
+        mutations: {
+            increment(state, step) {
+                state.result += step
+            },
+            decrement(state) {
+                state.result -= 1
+            }
+
+        },
+        actions: {
+            incrementScore: ({ commit }, delay) => {
+                setTimeout(() => {
+                    commit('increment', 3)
+                }, delay)
+            }
+        }
+    })
+
+
+    Vue.component('ChildB', {
+        computed: {
+            ...Vuex.mapGetters(['score'])
+        },
+        methods: {
+            changeScore() {
+                this.$store.dispatch('incrementScore', 3000);
+            },
+            decScore() {
+                this.$store.commit('decrement');
+            }
+        },
+        template: `
+    <div class="child childB">
+      <h1> Score B: {{ score }} </h1>
+      <button @click="changeScore">Inc Score</button>
+      <button @click="decScore">Dec Score</button>
+    </div>`
+    })
+
+    Vue.component('ChildA', {
+        computed: {
+            ...Vuex.mapGetters(['score'])
+        },
+        methods: {
+            ...Vuex.mapMutations({changeScore: 'increment'})
+        },
+        template: `
+    <div class="child childA">
+      <h1> Score A: {{ score }} </h1>
+      <button @click="changeScore(3)">Inc Score</button>
+    </div>`
+    })
+
+    Vue.component('Parent', {
+        computed: {
+            score() {
+                return this.$store.getters.score
+            }
+        },
+        template: `
+    <div id="parent">
+      <childA/>
+      <childB/>
+      <h1> Score P: {{ score }} </h1>
+    </div>`
+    })
+
+    new Vue({
+        el: '#app',
+        store
+    })
+    </script>
+</body>
+
+</html>
