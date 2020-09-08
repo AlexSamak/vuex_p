@@ -15,3 +15,5 @@ git rm --cached -r <dir>рекурсивно работает с папкой и
 Например, вы не хотите перезаписывать (или удалять) производственные / промежуточные файлы конфигурации.
 
 git update-index --skip-worktree <path-name>
+
+git ls-files -v | grep '^S'   show all skip
